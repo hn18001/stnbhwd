@@ -17,8 +17,8 @@ locnet:add(cudnn.ReLU(true))
 locnet:add(cudnn.SpatialMaxPooling(2,2,2,2))
 locnet:add(cudnn.SpatialConvolution(20,20,5,5))
 locnet:add(cudnn.ReLU(true))
-locnet:add(nn.View(20*2*2))
-locnet:add(nn.Linear(20*2*2,20))
+locnet:add(nn.View(20*19*144))          -- Fix it ccording the input image's width and height
+locnet:add(nn.Linear(20*19*144,20))
 locnet:add(cudnn.ReLU(true))
 
 -- we initialize the output layer so it gives the identity transform
@@ -31,8 +31,8 @@ outLayer.bias:copy(bias)
 locnet:add(outLayer)
 
 -- there we generate the grids
-locnet:add(nn.View(2,3))
-locnet:add(nn.AffineGridGeneratorBHWD(32,32))
+locnet:add(nn.View(1,2,3))  -- If the input images' number is 1, it needs to add the first dimension in View()
+locnet:add(nn.AffineGridGeneratorBHWD(100,600)) -- Attention, (height, width), not (width , height)
 
 -- we need a table input for the bilinear sampler, so we use concattable
 concat:add(tranet)
